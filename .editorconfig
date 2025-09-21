@@ -1,0 +1,57 @@
+# Root EditorConfig for Nexus Spectator repository
+# Ensures consistent whitespace, newline, and indentation across languages.
+root = true
+
+# General defaults
+[*]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+# Markdown keeps trailing spaces (for line breaks)
+[*.md]
+trim_trailing_whitespace = false
+indent_size = 2
+
+# JSON / YAML often use 2-space indentation for readability
+[*.{json,yml,yaml}]
+indent_size = 2
+
+# Python (PEP 8: 4 spaces)
+[*.py]
+indent_size = 4
+max_line_length = 120
+
+# C# conventions
+[*.cs]
+indent_size = 4
+csharp_new_line_before_members_in_object_initializers = true
+csharp_new_line_before_members_in_anonymous_types = true
+csharp_space_after_cast = false
+csharp_space_before_open_square_brackets = false
+
+# C / C++ (clang-format handles complex layout; keep basics here)
+[*.{c,cc,cpp,cxx,h,hpp}]
+indent_size = 4
+
+# Shell / PowerShell scripts
+[*.{sh,ps1}]
+indent_size = 2
+
+# XML (project files, csproj)
+[*.{xml,csproj}]
+indent_size = 2
+
+# Batch files
+[*.bat]
+end_of_line = crlf
+indent_style = tab
+indent_size = 4
+
+# Ignore minified vendor assets
+[*.min.js]
+insert_final_newline = false
+trim_trailing_whitespace = false

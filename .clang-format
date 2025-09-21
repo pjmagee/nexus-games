@@ -1,0 +1,35 @@
+# Project C++ styling for Nexus Spectator
+# Inherit nothing from dependencies; this is the root style.
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 120
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: False
+BreakBeforeBraces: Allman
+NamespaceIndentation: All
+PointerAlignment: Left
+DerivePointerAlignment: false
+SortIncludes: true
+IncludeBlocks: Regroup
+SpaceBeforeParens: ControlStatements
+SpacesInParentheses: false
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpaceAfterCStyleCast: false
+SpaceBeforeAssignmentOperators: true
+ContinuationIndentWidth: 4
+AccessModifierOffset: -4
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignEscapedNewlines: Left
+AlignOperands: true
+IndentCaseLabels: true
+BreakConstructorInitializers: AfterColon
+ReflowComments: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+Cpp11BracedListStyle: true
+UseCRLF: true

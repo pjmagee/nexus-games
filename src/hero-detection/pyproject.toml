@@ -1,0 +1,27 @@
+[project]
+name = "nexus-detection"
+version = "0.1.0"
+description = "Detection sidecar generator (placeholder YOLO integration forthcoming)"
+authors = [{name="Nexus Replay"}]
+requires-python = ">=3.12"
+readme = "README.md"
+license = {text = "MIT"}
+dependencies = [
+    "pillow>=10.0.0",
+    "opencv-python>=4.9.0.0",
+    "ultralytics>=8.1.0",
+    "supervision>=0.17.1",
+    "pyautogui>=0.9.54",
+]
+
+[project.scripts]
+nexus-detection = "detection.service:main"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.2.0",
+]

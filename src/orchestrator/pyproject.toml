@@ -1,0 +1,18 @@
+[project]
+name = "nexus-orchestrator"
+version = "0.1.0"
+description = "Orchestrator & supervision layer for Nexus Spectator"
+authors = [{name="Nexus Replay"}]
+requires-python = ">=3.12"
+readme = "README.md"
+license = {text = "MIT"}
+dependencies = [
+    "psutil>=5.9.8",
+]
+
+[project.scripts]
+nexus-orchestrator = "orchestrator.main:main"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"

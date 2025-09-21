@@ -1,0 +1,16 @@
+[project]
+name = "nexus-session-manager"
+version = "0.1.0"
+description = "Standalone session lifecycle manager for Nexus spectator"
+authors = [{name="Nexus Replay"}]
+requires-python = ">=3.12"
+readme = "README.md"
+license = {text = "MIT"}
+dependencies = []
+
+[project.scripts]
+nexus-session-manager = "session_manager.service:main"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"

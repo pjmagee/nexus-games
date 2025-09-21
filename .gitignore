@@ -1,0 +1,150 @@
+###############################################
+# Nexus Games Multi-language Project Git Ignore
+# Languages: C++, Python, .NET, (future ML training)
+# Goal: Track only source & configuration; ignore all build/runtime artifacts.
+###############################################
+
+### Root / Build Artifacts ###
+/build/
+/build*/
+/out/
+
+# Specific C++ capture build trees (multi-generator)
+/build/cpp/capture/
+/build/cpp/capture-ninja/
+
+# Accidental in-source build folder inside module
+/src/game-capture/build/
+
+### CMake / VS Generated ###
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+*.cmake
+*.vcxproj*
+*.sln
+*.opensdf
+*.sdf
+*.opendb
+*.ipch
+*.tlog
+*.obj
+*.pdb
+*.ilk
+*.idb
+*.exe
+*.dll
+*.lib
+*.exp
+*.log
+.vs/
+
+### .NET Artifacts ###
+**/bin/
+**/obj/
+*.user
+*.userprefs
+*.suo
+
+### Python - Bytecode / Caches ###
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+### Python - Packaging / Build Dist ###
+*.egg-info/
+*.egg
+dist/
+wheelhouse/
+
+### Python - Virtual Environments ###
+.venv/
+*/.venv/
+venv/
+ENV/
+
+### ML / YOLO / Training Artifacts ###
+# Ultralytics default runs directory (created if user trains locally)
+runs/
+# Generic training outputs
+training/
+# Large model weights (keep custom curated weights under models/ if desired)
+*.pt
+*.onnx
+*.engine
+*.ckpt
+
+### Datasets (retain config YAML, ignore heavy media) ###
+datasets/**/images/
+datasets/**/labels/
+!datasets/**/data.yaml
+
+### Session Runtime Output (ephemeral) ###
+sessions/current/frames/*.pending
+sessions/current/frames/*.bmp
+sessions/current/frames/*.detections.json
+sessions/current/frames/*.annotated.jpg
+sessions/current/capture.log
+sessions/current/state/logs/*.log
+sessions/current/state/heartbeat_*.json
+sessions/current/state/heartbeat*.json
+sessions/current/state/*.tmp
+
+# Allow placeholder keep files if used
+!sessions/.gitkeep
+!sessions/current/.gitkeep
+
+### Logs & Temp ###
+*.tmp
+*.temp
+*.swp
+*.swx
+*.bak
+*.orig
+debug.log
+logs/
+
+### Environment / Secrets (none committed) ###
+.env
+.env.*
+
+### OS / Editor Misc ###
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+### VS Code Settings
+# Keep workspace debug/task configs (remove line below if you want to track .vscode)
+.vscode/
+
+### Ignore crash dumps / diagnostics ###
+*.dmp
+*.mdmp
+*.crash
+
+### Node (if future tooling appears) ###
+node_modules/
+package-lock.json
+
+### Images / Artifacts Cache (future) ###
+cache/
+.cache/
+
+### Generated JSON Sidecars Outside Sessions (safety) ###
+**/*.detections.json.tmp
+**/*.detections.json.backup
+
+### Misc Safety ###
+*.iml
+.idea/
+
+###############################################
+# End of file
+###############################################
