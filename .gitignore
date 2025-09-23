@@ -72,18 +72,12 @@ ENV/
 ### ML / YOLO / Training Artifacts ###
 # Ultralytics default runs directory (created if user trains locally)
 runs/
-# Generic training outputs
-training/
+
 # Large model weights (keep custom curated weights under models/ if desired)
 *.pt
 *.onnx
 *.engine
 *.ckpt
-
-### Datasets (retain config YAML, ignore heavy media) ###
-datasets/**/images/
-datasets/**/labels/
-!datasets/**/data.yaml
 
 ### Session Runtime Output (ephemeral) ###
 sessions/current/frames/*.pending

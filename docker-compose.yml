@@ -1,0 +1,12 @@
+services:
+  label-studio:
+    image: heartexlabs/label-studio:latest
+    container_name: label-studio
+    ports:
+      - "8080:8080"
+    environment:
+      - LABEL_STUDIO_HOST=http://localhost:8080
+      - DATA_UPLOAD_MAX_NUMBER_FILES=10000
+    volumes:
+      - ./training/data:/label-studio/data
+    restart: unless-stopped
