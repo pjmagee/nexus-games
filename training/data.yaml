@@ -1,0 +1,13 @@
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 8
+names: ['blue nexus', 'blue player', 'blue tower', 'dragon knight', 'red boss', 'red nexus', 'red player', 'red tower']
+
+roboflow:
+  workspace: heroes-of-the-storm
+  project: heroes-of-the-storm-teqko
+  version: 7
+  license: MIT
+  url: https://universe.roboflow.com/heroes-of-the-storm/heroes-of-the-storm-teqko/dataset/7

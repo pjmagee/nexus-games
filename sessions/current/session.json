@@ -1,1 +1,20 @@
-{"schema_version":1,"replay":"2025-05-30 18.16.10 Silver City.StormReplay","state":"COMPLETED","timestamps":{"claimed":1758447719.7322807,"launch":1758447719.8236756,"loading":null,"active":1758447726.8299084,"ended":1758447736.8363996,"completed":1758447739.8388326,"aborted":null},"metrics":{"consecutive_success_frames":3,"launch_success_frames_required":3},"updated_ts":1758447739.8388407,"version":1}
+{
+  "schema_version": 1,
+  "replay": "2025-05-30 18.16.10 Silver City.StormReplay",
+  "state": "COMPLETED",
+  "timestamps": {
+    "claimed": 1758447719.7322807,
+    "launch": 1758447719.8236756,
+    "loading": null,
+    "active": 1758447726.8299084,
+    "ended": 1758447736.8363996,
+    "completed": 1758447739.8388326,
+    "aborted": null
+  },
+  "metrics": {
+    "consecutive_success_frames": 3,
+    "launch_success_frames_required": 3
+  },
+  "updated_ts": 1758447739.8388407,
+  "version": 1
+}

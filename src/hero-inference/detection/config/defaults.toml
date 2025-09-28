@@ -1,0 +1,15 @@
+[paths]
+frames = "sessions/current/frames"
+state = "sessions/current/state"
+
+[detector]
+model = "src/hero-training/outputs/yolov12-long3/weights/best.pt"
+device = "cpu"
+confidence = 0.05
+iou = 0.45
+annotate = true
+crop_mode = "br-sixth"
+
+[logging]
+level = "info"
+stdout = false

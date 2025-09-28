@@ -73,6 +73,10 @@ ENV/
 # Ultralytics default runs directory (created if user trains locally)
 runs/
 
+# Hero training project outputs (keep directory structure only)
+/src/hero-training/outputs/
+!/src/hero-training/outputs/.gitkeep
+
 # Large model weights (keep custom curated weights under models/ if desired)
 *.pt
 *.onnx

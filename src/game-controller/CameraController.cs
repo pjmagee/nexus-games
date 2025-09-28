@@ -26,7 +26,7 @@ internal sealed class CameraController
 
     public CameraController()
     {
-        _framesDir = Environment.GetEnvironmentVariable("FRAMES_DIR") ?? Path.Combine("sessions","current","frames");
+        _framesDir = Environment.GetEnvironmentVariable("FRAMES_DIR") ?? Path.Combine("sessions", "current", "frames");
         _alpha = ParseEnv("CAMERA_ALPHA", 0.25);
         _deadzone = ParseEnv("CAMERA_DEADZONE", 0.01);
         _maxStepNorm = ParseEnv("CAMERA_MAX_STEP_NORM", 0.06);
@@ -48,7 +48,7 @@ internal sealed class CameraController
     private record BBox(int x, int y, int w, int h);
     private record Center(int x, int y);
 
-    public (bool ok, int frameIndex, List<(double nx,double ny)> points, int w, int h) TryLoadLatest()
+    public (bool ok, int frameIndex, List<(double nx, double ny)> points, int w, int h) TryLoadLatest()
     {
         if (!Directory.Exists(_framesDir)) return (false, -1, new(), 0, 0);
         var files = Directory.EnumerateFiles(_framesDir, "*.detections.json")
@@ -56,10 +56,10 @@ internal sealed class CameraController
             .Where(f => int.TryParse(Path.GetFileNameWithoutExtension(f.Name).Split('.')[0], out _))
             .OrderBy(f => f.Name)
             .ToList();
-        if (files.Count == 0) return (false,-1,new(),0,0);
+        if (files.Count == 0) return (false, -1, new(), 0, 0);
         var last = files[^1];
         var stemStr = Path.GetFileNameWithoutExtension(last.Name);
-        if (!int.TryParse(stemStr, out var frameIdx)) return (false,-1,new(),0,0);
+        if (!int.TryParse(stemStr, out var frameIdx)) return (false, -1, new(), 0, 0);
         try
         {
             var json = File.ReadAllText(last.FullName);
@@ -67,14 +67,14 @@ internal sealed class CameraController
             {
                 PropertyNameCaseInsensitive = true
             });
-            if (sc == null || sc.version != 3) return (false,-1,new(),0,0);
-            if (sc.width <= 0 || sc.height <= 0) return (false,-1,new(),0,0);
+            if (sc == null || sc.version != 3) return (false, -1, new(), 0, 0);
+            if (sc.width <= 0 || sc.height <= 0) return (false, -1, new(), 0, 0);
             var pts = sc.objects?.Select(o => ((double)o.center.x / sc.width, (double)o.center.y / sc.height)).ToList() ?? new();
             return (true, frameIdx, pts, sc.width, sc.height);
         }
         catch
         {
-            return (false,-1,new(),0,0);
+            return (false, -1, new(), 0, 0);
         }
     }
 

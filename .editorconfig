@@ -44,14 +44,3 @@ indent_size = 2
 # XML (project files, csproj)
 [*.{xml,csproj}]
 indent_size = 2
-
-# Batch files
-[*.bat]
-end_of_line = crlf
-indent_style = tab
-indent_size = 4
-
-# Ignore minified vendor assets
-[*.min.js]
-insert_final_newline = false
-trim_trailing_whitespace = false

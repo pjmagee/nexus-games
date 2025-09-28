@@ -1,0 +1,31 @@
+[project]
+name = "hero-inference"
+version = "0.1.0"
+description = "YOLO-driven inference service producing detection sidecars for Nexus spectator"
+authors = [{name="Nexus Replay"}]
+requires-python = ">=3.12"
+readme = "README.md"
+license = {text = "MIT"}
+dependencies = [
+    "pillow>=10.3.0",
+    "opencv-python>=4.9.0.80",
+    "ultralytics>=8.3.0",
+]
+
+[project.scripts]
+hero-inference = "detection.service:main"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.3.1",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"detection" = ["config/*.toml"]
