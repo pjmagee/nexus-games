@@ -1,0 +1,51 @@
+services:
+  hero-inference:
+    build:
+      context: ./src/hero-inference
+    image: nexus/hero-inference:latest
+    restart: unless-stopped
+    environment:
+      - NEXUS_BASE_DIR=/workspace
+    volumes:
+      - ./sessions:/workspace/sessions
+      - ./src/hero-training/outputs:/workspace/src/hero-training/outputs:ro
+    command: ["python", "-m", "detection.service", "--config", "/workspace/detection/config/defaults.toml"]
+
+  hero-training:
+    build:
+      context: ./src/hero-training
+    image: nexus/hero-training:latest
+    profiles: ["training"]
+    environment:
+      - WANDB_MODE=offline
+    volumes:
+      - ./training:/workspace/training
+      - ./src/hero-training/outputs:/workspace/outputs
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    runtime: nvidia
+    command: ["python", "-m", "hero_training.cli", "--help"]
+
+  replay-harvestor:
+    build:
+      context: ./src/replay-harvestor
+    image: nexus/replay-harvestor:latest
+    restart: unless-stopped
+    environment:
+      - NEXUS_BASE_DIR=/workspace
+      - HARVEST_SOURCE=${HOTS_REPLAYS_ROOT:-/source}
+      - HARVEST_QUEUE_DIR=/workspace/replays/queue
+      - HARVEST_QUEUE_CAP=${HARVEST_QUEUE_CAP:-25}
+      - HARVEST_STATE_ROOT=/workspace/sessions/current/state
+    volumes:
+      - type: bind
+        source: ${HOTS_REPLAYS_ROOT:?Set HOTS_REPLAYS_ROOT to your Heroes replay directory}
+        target: /source
+        read_only: true
+      - ./replays:/workspace/replays
+      - ./sessions:/workspace/sessions

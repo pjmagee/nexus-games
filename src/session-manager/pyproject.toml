@@ -8,9 +8,9 @@ readme = "README.md"
 license = {text = "MIT"}
 dependencies = []
 
-[project.scripts]
-nexus-session-manager = "session_manager.service:main"
-
-[build-system]
-requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.build_meta"
+[dependency-groups]
+dev = [
+    "pytest>=8.3.1",
+    "debugpy>=1.8.0",
+    "ruff>=0.6.0"
+]

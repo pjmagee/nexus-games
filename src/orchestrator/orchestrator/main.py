@@ -2,20 +2,20 @@
 
 from __future__ import annotations
 
+import json
+import os
 import signal
 import subprocess
-import sys
 import time
-import os
-import json
-from datetime import datetime, timezone
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional
 
-from .util import ts, atomic_write_json  # type: ignore
+from .util import atomic_write_json, ts  # type: ignore
 
-BASE_DIR = Path.cwd()
+# Use NEXUS_BASE_DIR environment variable for consistent path resolution
+BASE_DIR = Path(os.getenv("NEXUS_BASE_DIR", Path.cwd()))
 SESSIONS_DIR = BASE_DIR / "sessions" / "current"
 STATE_DIR = SESSIONS_DIR / "state"
 STATE_DIR.mkdir(parents=True, exist_ok=True)
@@ -28,9 +28,9 @@ CAPTURE_EXE = Path(f"build/cpp/capture/{CAPTURE_CONFIG}/hots_capture.exe")
 # Updated C# project paths (previous csharp/ path was legacy)
 CSHARP_CONTROL_PROJ = Path("src/game-controller/Control.csproj")
 CSHARP_HARVESTER_PROJ = Path("src/replay-harvestor/Harvester.csproj")
-DETECTION_SCRIPT = [sys.executable, "-m", "detection.service"]
-# External standalone session manager (installed console script)
-SESSION_MANAGER_CMD = ["nexus-session-manager"]
+DETECTION_SCRIPT = ["uv", "run", "python", "-m", "detection.service"]
+# External standalone session manager (module-based execution)
+SESSION_MANAGER_CMD = ["uv", "run", "python", "-m", "session_manager.service"]
 
 MAX_RESTARTS = 5
 BASE_BACKOFF = 2.0

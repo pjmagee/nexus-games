@@ -1,0 +1,26 @@
+{
+  // Global workspace settings for Nexus Games
+  // Individual projects have their own specific settings in their workspaces
+
+  // General file associations and formatting
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/.vscode-backup": true,
+    "src": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/.venv": true,
+    "**/venv": true,
+    "**/__pycache__": true,
+    "**/build": true,
+    "**/bin": true,
+    "**/obj": true
+  },
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": true,
+  "cmake.sourceDirectory": "D:/github/heroes-replay/nexus-games/src/game-capture",
+}

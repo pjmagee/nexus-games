@@ -1,0 +1,72 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 20,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "debug-vs2022",
+            "displayName": "Debug (Visual Studio 2022)",
+            "description": "Debug configuration using Visual Studio 2022 generator",
+            "generator": "Visual Studio 17 2022",
+            "architecture": "x64",
+            "binaryDir": "build",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+            }
+        },
+        {
+            "name": "release-vs2022",
+            "displayName": "Release (Visual Studio 2022)",
+            "description": "Release configuration using Visual Studio 2022 generator",
+            "generator": "Visual Studio 17 2022",
+            "architecture": "x64",
+            "binaryDir": "build",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+            }
+        },
+        {
+            "name": "debug-ninja",
+            "displayName": "Debug (Ninja)",
+            "description": "Debug configuration using Ninja generator",
+            "generator": "Ninja",
+            "binaryDir": "build-ninja",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "debug-vs2022-build",
+            "displayName": "Build Debug (VS2022)",
+            "configurePreset": "debug-vs2022",
+            "configuration": "Debug"
+        },
+        {
+            "name": "release-vs2022-build",
+            "displayName": "Build Release (VS2022)",
+            "configurePreset": "release-vs2022",
+            "configuration": "Release"
+        },
+        {
+            "name": "debug-ninja-build",
+            "displayName": "Build Debug (Ninja)",
+            "configurePreset": "debug-ninja"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "debug-vs2022-test",
+            "displayName": "Test Debug (VS2022)",
+            "configurePreset": "debug-vs2022",
+            "configuration": "Debug"
+        }
+    ]
+}

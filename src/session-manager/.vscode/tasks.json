@@ -1,0 +1,36 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "sync dependencies",
+            "type": "shell",
+            "command": "uv sync --group dev",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            }
+        },
+        {
+            "label": "run session manager",
+            "type": "shell",
+            "command": "uv run python -m session_manager.service",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "NEXUS_BASE_DIR": "${workspaceFolder}/../.."
+                }
+            },
+            "dependsOn": ["sync dependencies"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}

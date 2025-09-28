@@ -62,13 +62,18 @@ def test_generate_sidecars_for_all_frames(detection_ctx, tmp_path: Path):
 
     created = 0
     for frame in frames:
-        sidecar = frame.with_suffix(".detections.json")
-        # Remove if exists to force regeneration (only for test isolation)
-        if sidecar.exists():
-            sidecar.unlink()
+        state_sidecar = (
+            detection_ctx.config.paths.detections_dir / f"{frame.stem}.detections.json"
+        )
+        if state_sidecar.exists():
+            state_sidecar.unlink()
+        legacy_sidecar = frame.with_suffix(".detections.json")
+        if legacy_sidecar.exists():
+            legacy_sidecar.unlink()
         service.process_frame(detection_ctx, frame, stats)
-        assert sidecar.exists(), f"Sidecar missing for {frame.name}"
-        with sidecar.open("r", encoding="utf-8") as f:
+        assert state_sidecar.exists(), f"State sidecar missing for {frame.name}"
+        assert not legacy_sidecar.exists(), "Legacy frame sidecar should be removed"
+        with state_sidecar.open("r", encoding="utf-8") as f:
             data = json.load(f)
         # Basic schema assertions
         assert data.get("version") == 3
@@ -90,8 +95,10 @@ def test_idempotent_processing(detection_ctx):
     # First pass
     for frame in frames:
         service.process_frame(detection_ctx, frame, stats)
+    detections_dir = detection_ctx.config.paths.detections_dir
     mtimes_first = {
-        f.with_suffix(".detections.json"): f.with_suffix(".detections.json")
+        detections_dir
+        / f"{f.stem}.detections.json": (detections_dir / f"{f.stem}.detections.json")
         .stat()
         .st_mtime
         for f in frames

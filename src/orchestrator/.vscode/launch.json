@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug: Orchestrator",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "orchestrator.main",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}",
+            "python": "${workspaceFolder}/.venv/Scripts/python.exe",
+            "env": {
+                "LOG_LEVEL": "debug",
+                "PYTHONPATH": "${workspaceFolder}",
+                "NEXUS_BASE_DIR": "${workspaceFolder}/../.."
+            },
+            "preLaunchTask": "sync dependencies",
+            "console": "integratedTerminal"
+        }
+    ]
+}

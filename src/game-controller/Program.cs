@@ -34,12 +34,11 @@ class Program
             {
                 var hb = new Heartbeat("control", DateTimeOffset.UtcNow.ToUnixTimeSeconds(), new
                 {
-                    loops = loop,
-                        up_seconds = (int)sw.Elapsed.TotalSeconds,
+                    loops = loop, up_seconds = (int)sw.Elapsed.TotalSeconds,
                     camera = new {
                         smooth_x = Math.Round(controller.SmoothX, 4),
                         smooth_y = Math.Round(controller.SmoothY, 4),
-                        last_frame = controller.LastFrameIndex
+                        last_frame = controller.LastFrameId
                     }
                 });
                 HeartbeatWriter.Write(hbPath, hb);

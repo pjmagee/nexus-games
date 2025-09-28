@@ -1,0 +1,25 @@
+{
+  // Global tasks for the Nexus Games project
+  // Individual projects have their own tasks in their respective workspaces
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Session: Clear Outputs",
+      "type": "shell",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "& '${workspaceFolder}/scripts/clear-session-outputs.ps1' -Confirm:$false"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    }
+  ]
+}

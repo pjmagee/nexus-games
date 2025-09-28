@@ -10,32 +10,15 @@ dependencies = [
     "ultralytics>=8.3.0",
     "torch>=2.6.0",
     "torchvision>=0.21.0",
-    "torchaudio>=2.6.0",
     "pyyaml>=6.0.2",
-    "typer>=0.12.3",
-    "rich>=13.7.1",
-    "supervision>=0.20.0",
-    "wandb>=0.17.0",
 ]
 
-[project.scripts]
-hero-train = "hero_training.cli:run"
-
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "pytest>=8.3.1",
     "ruff>=0.6.0"
 ]
-
 cuda-cu124 = [
     "torch==2.6.0",
-    "torchvision==0.21.0",
-    "torchaudio==2.6.0"
+    "torchvision==0.21.0"
 ]
-
-[build-system]
-requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools.packages.find]
-include = ["hero_training"]

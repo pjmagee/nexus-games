@@ -1,0 +1,36 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug: Training CLI",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "hero_training.cli",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}",
+            "python": "${workspaceFolder}/.venv/Scripts/python.exe",
+            "args": ["--dry-run"],
+            "env": {
+                "LOG_LEVEL": "debug",
+                "NEXUS_BASE_DIR": "${workspaceFolder}/../.."
+            },
+            "preLaunchTask": "sync dependencies",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Debug: Training CLI (Full)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "hero_training.cli",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}",
+            "python": "${workspaceFolder}/.venv/Scripts/python.exe",
+            "env": {
+                "LOG_LEVEL": "debug",
+                "NEXUS_BASE_DIR": "${workspaceFolder}/../.."
+            },
+            "preLaunchTask": "sync dependencies",
+            "console": "integratedTerminal"
+        }
+    ]
+}

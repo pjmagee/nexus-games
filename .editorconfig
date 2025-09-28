@@ -1,5 +1,3 @@
-# Root EditorConfig for Nexus Spectator repository
-# Ensures consistent whitespace, newline, and indentation across languages.
 root = true
 
 # General defaults
@@ -20,27 +18,10 @@ indent_size = 2
 [*.{json,yml,yaml}]
 indent_size = 2
 
-# Python (PEP 8: 4 spaces)
-[*.py]
-indent_size = 4
-max_line_length = 120
-
-# C# conventions
-[*.cs]
-indent_size = 4
-csharp_new_line_before_members_in_object_initializers = true
-csharp_new_line_before_members_in_anonymous_types = true
-csharp_space_after_cast = false
-csharp_space_before_open_square_brackets = false
-
-# C / C++ (clang-format handles complex layout; keep basics here)
-[*.{c,cc,cpp,cxx,h,hpp}]
-indent_size = 4
-
 # Shell / PowerShell scripts
 [*.{sh,ps1}]
-indent_size = 2
+indent_size = 4
 
 # XML (project files, csproj)
 [*.{xml,csproj}]
-indent_size = 2
+indent_size = 4

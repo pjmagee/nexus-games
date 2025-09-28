@@ -86,8 +86,6 @@ runs/
 ### Session Runtime Output (ephemeral) ###
 sessions/current/frames/*.pending
 sessions/current/frames/*.bmp
-sessions/current/frames/*.detections.json
-sessions/current/frames/*.annotated.jpg
 sessions/current/capture.log
 sessions/current/state/logs/*.log
 sessions/current/state/heartbeat_*.json
@@ -97,6 +95,9 @@ sessions/current/state/*.tmp
 # Allow placeholder keep files if used
 !sessions/.gitkeep
 !sessions/current/.gitkeep
+
+*.detections.json
+*.annotated.jpg
 
 ### Logs & Temp ###
 *.tmp
@@ -119,8 +120,8 @@ ehthumbs.db
 Desktop.ini
 
 ### VS Code Settings
-# Keep workspace debug/task configs (remove line below if you want to track .vscode)
-.vscode/
+# Track shared VS Code config while ignoring local state.
+!.vscode/
 
 ### Ignore crash dumps / diagnostics ###
 *.dmp

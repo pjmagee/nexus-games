@@ -1,0 +1,20 @@
+{
+  // Global launch configurations for the Nexus Games project
+  // Individual projects have their own debug configurations in their respective workspaces
+  // These are compound configurations for debugging multiple services together
+  "version": "0.2.0",
+  "compounds": [
+    {
+      "name": "Debug: Full Stack (All Services)",
+      "configurations": [],
+      "presentation": {
+        "hidden": false,
+        "group": "Full Stack",
+        "order": 1
+      }
+    }
+  ],
+  "configurations": [
+
+  ]
+}

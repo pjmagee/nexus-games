@@ -12,15 +12,14 @@ Future improvements (Phase 1+):
 
 from __future__ import annotations
 
-import signal
-import time
 import json
 import os
-from datetime import datetime, timezone
+import signal
+import time
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional, Dict, Any, TextIO
-
+from typing import Any, Dict, Optional, TextIO
 
 
 def ts() -> float:  # simple timestamp helper
@@ -36,7 +35,8 @@ def atomic_write_json(path: Path, payload: Dict[str, Any]) -> None:
     os.replace(tmp, path)
 
 
-BASE_DIR = Path.cwd()
+# Use NEXUS_BASE_DIR environment variable for consistent path resolution
+BASE_DIR = Path(os.getenv("NEXUS_BASE_DIR", Path.cwd()))
 REPLAYS_DIR = BASE_DIR / "replays"
 QUEUE_DIR = REPLAYS_DIR / "queue"
 ACTIVE_DIR = REPLAYS_DIR / "active"
@@ -143,9 +143,7 @@ class Session:
     """Session state representation."""
 
     replay_filename: Optional[str] = None
-    state: str = (
-        "IDLE"  # IDLE -> QUEUED -> LAUNCHING -> ACTIVE -> ENDED -> COMPLETED | ABORTED | CORRUPT
-    )
+    state: str = "IDLE"  # IDLE -> QUEUED -> LAUNCHING -> ACTIVE -> ENDED -> COMPLETED | ABORTED | CORRUPT
     claimed_ts: Optional[float] = None
     launch_ts: Optional[float] = None
     loading_ts: Optional[float] = None  # retained for compatibility

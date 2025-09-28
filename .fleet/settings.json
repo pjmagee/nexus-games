@@ -1,0 +1,28 @@
+{
+    "plugins": [
+        {
+            "type": "add",
+            "pluginName": "fleet.dotnet"
+        },
+        {
+            "type": "add",
+            "pluginName": "fleet.language.cpp"
+        },
+        {
+            "type": "add",
+            "pluginName": "fleet.python"
+        },
+        {
+            "type": "add",
+            "pluginName": "fleet.toml"
+        },
+        {
+            "type": "add",
+            "pluginName": "fleet.yaml"
+        },
+        {
+            "type": "add",
+            "pluginName": "fleet.markdown"
+        }
+    ]
+}

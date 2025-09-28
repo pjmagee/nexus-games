@@ -1,0 +1,20 @@
+{
+    "dotnet.defaultSolution": "./Harvester.csproj",
+    "omnisharp.enableRoslynAnalyzers": true,
+    "omnisharp.enableEditorConfigSupport": true,
+    "omnisharp.enableImportCompletion": true,
+    "[csharp]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "ms-dotnettools.csharp",
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
+    },
+    "files.associations": {
+        "*.csproj": "xml",
+        "*.props": "xml",
+        "*.targets": "xml"
+    },
+    "terminal.integrated.cwd": "${workspaceFolder}",
+    "dotnet.completion.showCompletionItemsFromUnimportedNamespaces": true
+}

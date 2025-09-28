@@ -1,0 +1,13 @@
+{
+  "service": "control",
+  "ts": 1759088659,
+  "info": {
+    "loops": 145,
+    "up_seconds": 29,
+    "camera": {
+      "smooth_x": 0.5,
+      "smooth_y": 0.5,
+      "last_frame": null
+    }
+  }
+}

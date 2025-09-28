@@ -1,0 +1,112 @@
+{
+    "folders": [
+        {
+            "path": ".",
+            "name": "🚀 Project Root"
+        },
+        {
+            "path": "src/game-capture",
+            "name": "game-capture workspace (C++23)"
+        },
+        {
+            "path": "src/game-controller",
+            "name": "game-controller workspace (C# .NET9)"
+        },
+        {
+            "path": "src/hero-inference",
+            "name": "hero-inference workspace (CPython3.12)"
+        },
+        {
+            "path": "src/hero-training",
+            "name": "hero-training workspace (CPython3.12)"
+        },
+        {
+            "path": "src/orchestrator",
+            "name": "orchestrator workspace (CPython3.12)"
+        },
+        {
+            "path": "src/replay-harvestor",
+            "name": "replay-harvestor workspace (C# .NET9)"
+        },
+        {
+            "path": "src/session-manager",
+            "name": "session-manager workspace (CPython3.12)"
+        },
+        {
+            "path": "replays",
+            "name": "📁 Replays"
+        },
+        {
+            "path": "sessions",
+            "name": "📋 Sessions"
+        },
+        {
+            "path": "training",
+            "name": "📚 Training Data"
+        },
+        {
+            "path": "scripts",
+            "name": "🔧 Scripts"
+        }
+    ],
+    "settings": {
+        "window.zoomLevel": 1,
+        "files.autoSave": "afterDelay",
+        "workbench.editor.labelFormat": "medium",
+        "terminal.integrated.defaultProfile.windows": "PowerShell",
+        "files.exclude": {
+            "**/.git": true,
+            "**/.DS_Store": true,
+            "**/Thumbs.db": true,
+            "**/.vscode-backup": true
+        },
+        "search.exclude": {
+            "**/node_modules": true,
+            "**/.venv": true,
+            "**/venv": true,
+            "**/__pycache__": true,
+            "**/build": true,
+            "**/bin": true,
+            "**/obj": true
+        },
+        "files.associations": {
+            "filesystem": "cpp"
+        },
+    },
+    "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+            {
+                "label": "My Task",
+                "command": "echo hello",
+                "type": "shell",
+                "args": [],
+                "problemMatcher": [
+                    "$tsc"
+                ],
+                "presentation": {
+                    "reveal": "always"
+                },
+                "group": "build"
+            }
+        ]
+    },
+    "extensions": {
+        "recommendations": [
+            // Multi-language support
+            "ms-python.python",
+            "ms-python.debugpy",
+            "charliermarsh.ruff",
+            "ms-vscode.cpptools",
+            "ms-vscode.cmake-tools",
+            "ms-dotnettools.csharp",
+            "ms-dotnettools.vscode-dotnet-runtime",
+
+            // General productivity
+            "ms-vscode.powershell",
+            "ms-vscode.vscode-json",
+            "redhat.vscode-yaml",
+            "ms-vscode.docker"
+        ]
+    }
+}

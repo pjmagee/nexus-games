@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug: Replay Harvester",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/Debug/net9.0/Harvester.dll",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "build project",
+            "env": {
+                "LOG_LEVEL": "debug"
+            },
+            "console": "integratedTerminal"
+        }
+    ]
+}

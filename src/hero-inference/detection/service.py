@@ -36,7 +36,12 @@ except (ImportError, OSError):  # pragma: no cover
 
 MODULE_ROOT = Path(__file__).resolve().parent
 SRC_ROOT = MODULE_ROOT.parent.parent if len(MODULE_ROOT.parents) >= 2 else MODULE_ROOT
-REPO_ROOT = SRC_ROOT.parent if len(MODULE_ROOT.parents) >= 3 else SRC_ROOT
+# Use NEXUS_BASE_DIR if set, otherwise infer from module location
+REPO_ROOT = (
+    Path(os.getenv("NEXUS_BASE_DIR"))
+    if os.getenv("NEXUS_BASE_DIR")
+    else (SRC_ROOT.parent if len(MODULE_ROOT.parents) >= 3 else SRC_ROOT)
+)
 
 RUNNING = True
 _LEVEL_ORDER = {"debug": 10, "info": 20, "warning": 30, "error": 40, "critical": 50}
@@ -494,7 +499,6 @@ class Stats:
     avg_latency_ms: float = 0.0
     camera_x: float = 0.5
     camera_y: float = 0.5
-    max_seen_index: int = -1  # highest numeric frame index observed
 
 
 def write_heartbeat(ctx: RuntimeContext, stats: Stats) -> None:
@@ -528,23 +532,28 @@ def process_frame(ctx: RuntimeContext, frame_path: Path, stats: Stats) -> None:
     detection_cfg = ctx.config.detection
 
     stem = frame_path.stem
-    sidecar = frame_path.with_suffix(".detections.json")
-    state_sidecar = ctx.config.paths.detections_dir / f"{stem}.json"
+    frame_sidecar = frame_path.with_suffix(".detections.json")
+    state_sidecar = ctx.config.paths.detections_dir / f"{stem}.detections.json"
     state_annotated_dir = ctx.config.paths.annotated_dir
-    existing_sidecar = sidecar.exists()
+
     objects: list[dict[str, Any]] = []
     width = height = 0
     latency_ms = 0.0
     status = classify_status(stats.processed)
 
-    if existing_sidecar:
+    existing_state = state_sidecar.exists()
+    legacy_sidecar_exists = frame_sidecar.exists()
+
+    if existing_state or legacy_sidecar_exists:
+        sidecar_path = state_sidecar if existing_state else frame_sidecar
+        sc: Dict[str, Any] | None = None
         try:
-            with sidecar.open("r", encoding="utf-8") as f:
+            with sidecar_path.open("r", encoding="utf-8") as f:
                 sc = json.load(f)
-            if sc.get("version") == 3:
-                objects = sc.get("objects", [])
-                width = sc.get("width", 0)
-                height = sc.get("height", 0)
+        except (OSError, ValueError, json.JSONDecodeError):
+            sc = None
+        else:
+            if not existing_state and sc is not None:
                 try:
                     atomic_write_json(state_sidecar, sc)
                 except OSError as e:
@@ -555,16 +564,35 @@ def process_frame(ctx: RuntimeContext, frame_path: Path, stats: Stats) -> None:
                         error_type=type(e).__name__,
                         error_message=str(e),
                     )
-        except (OSError, ValueError, json.JSONDecodeError):
-            pass
+            if sc is not None:
+                objects = sc.get("objects", [])
+                width = sc.get("width", 0)
+                height = sc.get("height", 0)
+                status = sc.get("status", status)
+                camera = sc.get("camera", {})
+                stats.camera_x = float(camera.get("center_x", stats.camera_x))
+                stats.camera_y = float(camera.get("center_y", stats.camera_y))
+                stats.last_frame = sc.get("frame", stem)
+                inference_info = sc.get("inference", {})
+                stats.last_latency_ms = float(
+                    inference_info.get("latency_ms", stats.last_latency_ms)
+                )
+                if stats.avg_latency_ms == 0 and stats.last_latency_ms:
+                    stats.avg_latency_ms = stats.last_latency_ms
+        if legacy_sidecar_exists:
+            try:
+                frame_sidecar.unlink()
+            except OSError:
+                pass
     else:
         latency_ms, objects, (width, height) = backend.infer(frame_path)
         stats.last_latency_ms = latency_ms
         if latency_ms > 0:
-            if stats.avg_latency_ms == 0:
-                stats.avg_latency_ms = latency_ms
-            else:
-                stats.avg_latency_ms = stats.avg_latency_ms * 0.8 + latency_ms * 0.2
+            stats.avg_latency_ms = (
+                latency_ms
+                if stats.avg_latency_ms == 0
+                else stats.avg_latency_ms * 0.8 + latency_ms * 0.2
+            )
 
         if objects:
             sum_x = sum(o["center"]["x"] for o in objects)
@@ -603,26 +631,21 @@ def process_frame(ctx: RuntimeContext, frame_path: Path, stats: Stats) -> None:
             },
         }
         try:
-            atomic_write_json(sidecar, payload)
-            try:
-                atomic_write_json(state_sidecar, payload)
-            except OSError as e:
-                logger.error(
-                    "state_sidecar.write_failed",
-                    event_type="state_sidecar.write_failed",
-                    frame=stem,
-                    error_type=type(e).__name__,
-                    error_message=str(e),
-                )
+            atomic_write_json(state_sidecar, payload)
         except OSError as e:
             logger.error(
-                "sidecar.write_failed",
-                event_type="sidecar.write_failed",
+                "state_sidecar.write_failed",
+                event_type="state_sidecar.write_failed",
                 frame=stem,
                 error_type=type(e).__name__,
                 error_message=str(e),
             )
             return
+        if legacy_sidecar_exists:
+            try:
+                frame_sidecar.unlink()
+            except OSError:
+                pass
         stats.processed += 1
         stats.last_frame = stem
         logger.debug(
@@ -636,114 +659,99 @@ def process_frame(ctx: RuntimeContext, frame_path: Path, stats: Stats) -> None:
             },
         )
 
-    if detection_cfg.annotate:
-        anno_path = frame_path.parent / f"{frame_path.stem}.annotated.jpg"
-        state_anno_path = state_annotated_dir / anno_path.name
-        if anno_path.exists():
-            try:
-                shutil.copy2(anno_path, state_anno_path)
-            except OSError as e:
-                logger.error(
-                    "annotation.copy_failed",
-                    event_type="annotation.copy_failed",
-                    frame=stem,
-                    error_type=type(e).__name__,
-                    error_message=str(e),
-                )
-            return
-        if not _HAS_CV2:
-            logger.debug(
-                "annotation.skipped",
-                event_type="annotation.skipped",
+    anno_name = f"{stem}.annotated.jpg"
+    state_anno_path = state_annotated_dir / anno_name
+    legacy_anno_path = frame_path.parent / anno_name
+
+    if legacy_anno_path.exists() and not state_anno_path.exists():
+        try:
+            shutil.move(str(legacy_anno_path), state_anno_path)
+        except OSError as e:
+            logger.error(
+                "annotation.migrate_failed",
+                event_type="annotation.migrate_failed",
                 frame=stem,
-                reason="missing_opencv",
-                backend_enabled=backend.enabled,
+                error_type=type(e).__name__,
+                error_message=str(e),
+            )
+
+    if not detection_cfg.annotate:
+        return
+
+    if state_anno_path.exists():
+        return
+
+    if not _HAS_CV2:
+        logger.debug(
+            "annotation.skipped",
+            event_type="annotation.skipped",
+            frame=stem,
+            reason="missing_opencv",
+            backend_enabled=backend.enabled,
+        )
+        return
+
+    try:
+        img = cv2.imread(str(frame_path))  # type: ignore
+        if img is None:
+            logger.debug(
+                "annotation.read_failed",
+                event_type="annotation.read_failed",
+                frame=stem,
             )
             return
-        try:
-            img = cv2.imread(str(frame_path))  # type: ignore
-            if img is None:
-                logger.debug(
-                    "annotation.read_failed",
-                    event_type="annotation.read_failed",
-                    frame=stem,
-                )
-                return
-            if backend.enabled and objects:
-                for obj in objects:
-                    x = int(obj.get("bbox", {}).get("x", 0))
-                    y = int(obj.get("bbox", {}).get("y", 0))
-                    w = int(obj.get("bbox", {}).get("w", 0))
-                    h = int(obj.get("bbox", {}).get("h", 0))
-                    cls_name = obj.get("class", "?")
-                    conf = obj.get("conf", 0.0)
-                    color = (0, 255, 0)
-                    cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)  # type: ignore
-                    label = f"{cls_name}:{conf:.2f}"
-                    cv2.putText(img, label, (x, max(0, y - 5)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1, cv2.LINE_AA)  # type: ignore
-            else:
-                status_txt = "NO DETECTIONS" if backend.enabled else "BACKEND DISABLED"
+        if backend.enabled and objects:
+            for obj in objects:
+                x = int(obj.get("bbox", {}).get("x", 0))
+                y = int(obj.get("bbox", {}).get("y", 0))
+                w = int(obj.get("bbox", {}).get("w", 0))
+                h = int(obj.get("bbox", {}).get("h", 0))
+                cls_name = obj.get("class", "?")
+                conf = obj.get("conf", 0.0)
+                color = (0, 255, 0)
+                cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)  # type: ignore
+                label = f"{cls_name}:{conf:.2f}"
                 cv2.putText(
                     img,
-                    status_txt,
-                    (20, 40),
+                    label,
+                    (x, max(0, y - 5)),
                     cv2.FONT_HERSHEY_SIMPLEX,
-                    1.0,
-                    (50, 50, 200),
-                    2,
-                    cv2.LINE_AA,  # type: ignore
+                    0.5,
+                    color,
+                    1,
+                    cv2.LINE_AA,
                 )  # type: ignore
-            tmp_anno = anno_path.parent / f"{frame_path.stem}.annotated.tmp.jpg"
-            success = cv2.imwrite(str(tmp_anno), img)  # type: ignore
-            if not success:
-                logger.error(
-                    "annotation.failed",
-                    event_type="annotation.failed",
-                    frame=stem,
-                    error_type="EncodeError",
-                    error_message="cv2.imwrite returned False",
-                )
-                try:
-                    if tmp_anno.exists():
-                        tmp_anno.unlink()
-                except OSError:
-                    pass
-                return
-            try:
-                os.replace(tmp_anno, anno_path)
-                try:
-                    shutil.copy2(anno_path, state_anno_path)
-                except OSError as copy_err:
-                    logger.error(
-                        "annotation.copy_failed",
-                        event_type="annotation.copy_failed",
-                        frame=stem,
-                        error_type=type(copy_err).__name__,
-                        error_message=str(copy_err),
-                    )
-            except OSError as e:
-                logger.error(
-                    "annotation.failed",
-                    event_type="annotation.failed",
-                    frame=stem,
-                    error_type=type(e).__name__,
-                    error_message=str(e),
-                )
-                try:
-                    if tmp_anno.exists():
-                        tmp_anno.unlink()
-                except OSError:
-                    pass
-                return
-            logger.debug(
-                "frame.annotated",
-                event_type="frame.annotated",
+        else:
+            status_txt = "NO DETECTIONS" if backend.enabled else "BACKEND DISABLED"
+            cv2.putText(
+                img,
+                status_txt,
+                (20, 40),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1.0,
+                (50, 50, 200),
+                2,
+                cv2.LINE_AA,  # type: ignore
+            )  # type: ignore
+        tmp_anno = state_annotated_dir / f"{stem}.annotated.tmp.jpg"
+        success = cv2.imwrite(str(tmp_anno), img)  # type: ignore
+        if not success:
+            logger.error(
+                "annotation.failed",
+                event_type="annotation.failed",
                 frame=stem,
-                annotated=str(anno_path.name),
-                objects=len(objects),
-                backend_enabled=backend.enabled,
+                error_type="EncodeError",
+                error_message="cv2.imwrite returned False",
             )
-        except (OSError, ValueError, RuntimeError) as e:  # pragma: no cover
+            try:
+                if tmp_anno.exists():
+                    tmp_anno.unlink()
+            except OSError:
+                pass
+            return
+        try:
+            os.replace(tmp_anno, state_anno_path)
+        except OSError as e:
             logger.error(
                 "annotation.failed",
                 event_type="annotation.failed",
@@ -751,6 +759,28 @@ def process_frame(ctx: RuntimeContext, frame_path: Path, stats: Stats) -> None:
                 error_type=type(e).__name__,
                 error_message=str(e),
             )
+            try:
+                if tmp_anno.exists():
+                    tmp_anno.unlink()
+            except OSError:
+                pass
+            return
+        logger.debug(
+            "frame.annotated",
+            event_type="frame.annotated",
+            frame=stem,
+            annotated=str(state_anno_path.name),
+            objects=len(objects),
+            backend_enabled=backend.enabled,
+        )
+    except (OSError, ValueError, RuntimeError) as e:  # pragma: no cover
+        logger.error(
+            "annotation.failed",
+            event_type="annotation.failed",
+            frame=stem,
+            error_type=type(e).__name__,
+            error_message=str(e),
+        )
 
 
 def scan_existing(ctx: RuntimeContext, stats: Stats) -> None:
@@ -774,14 +804,13 @@ def scan_existing(ctx: RuntimeContext, stats: Stats) -> None:
             path=str(frames_dir),
         )
     for frame in frames:
-        # Update max_seen_index for incremental loop optimization
-        try:
-            idx = int(frame.stem)
-            if idx > stats.max_seen_index:
-                stats.max_seen_index = idx
-        except ValueError:
-            pass
         process_frame(ctx, frame, stats)
+
+    state_files = sorted(ctx.config.paths.detections_dir.glob("*.detections.json"))
+    if state_files:
+        stats.processed = max(stats.processed, len(state_files))
+        if stats.last_frame is None:
+            stats.last_frame = state_files[-1].stem
     logger.info(
         "initial.scan.complete",
         event_type="initial.scan",
@@ -891,7 +920,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
     if args.run_once:
         for frame in sorted(frames_dir.glob("*.bmp")):
-            if not frame.with_suffix(".detections.json").exists():
+            state_sidecar = (
+                ctx.config.paths.detections_dir / f"{frame.stem}.detections.json"
+            )
+            if not state_sidecar.exists():
                 process_frame(ctx, frame, stats)
         write_heartbeat(ctx, stats)
         logger.info(
@@ -903,31 +935,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         return 0
 
     while RUNNING:
-        new_frames: list[Path] = []
-        for frame in frames_dir.glob("*.bmp"):
-            try:
-                idx = int(frame.stem)
-            except ValueError:
-                idx = -1
-            if idx > stats.max_seen_index:
-                new_frames.append(frame)
-        if new_frames:
-            for nf in sorted(
-                new_frames, key=lambda p: int(p.stem) if p.stem.isdigit() else 0
-            ):
-                try:
-                    nf_idx = int(nf.stem)
-                    if nf_idx > stats.max_seen_index:
-                        stats.max_seen_index = nf_idx
-                except ValueError:
-                    pass
-                if not nf.with_suffix(".detections.json").exists():
-                    process_frame(ctx, nf, stats)
-        else:
-            for frame in frames_dir.glob("*.bmp"):
-                side = frame.with_suffix(".detections.json")
-                if not side.exists():
-                    process_frame(ctx, frame, stats)
+        for frame in sorted(frames_dir.glob("*.bmp")):
+            state_sidecar = (
+                ctx.config.paths.detections_dir / f"{frame.stem}.detections.json"
+            )
+            if not state_sidecar.exists():
+                process_frame(ctx, frame, stats)
         now = ts()
         if now - last_hb >= 2.0:
             write_heartbeat(ctx, stats)

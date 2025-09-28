@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug: Session Manager",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "session_manager.service",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}",
+            "python": "${workspaceFolder}/.venv/Scripts/python.exe",
+            "env": {
+                "LOG_LEVEL": "debug",
+                "NEXUS_BASE_DIR": "${workspaceFolder}/../.."
+            },
+            "preLaunchTask": "sync dependencies",
+            "console": "integratedTerminal"
+        }
+    ]
+}

@@ -1,0 +1,38 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug: Inference Service",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "detection.service",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}",
+            "python": "${workspaceFolder}/.venv/Scripts/python.exe",
+            "env": {
+                "LOG_LEVEL": "debug",
+                "DETECTION_STDOUT": "1",
+                "NEXUS_BASE_DIR": "${workspaceFolder}/../.."
+            },
+            "preLaunchTask": "sync dependencies",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Debug: Inference (Run Once Backfill)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "detection.service",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}",
+            "python": "${workspaceFolder}/.venv/Scripts/python.exe",
+            "env": {
+                "LOG_LEVEL": "debug",
+                "DETECTION_STDOUT": "1",
+                "DETECTION_RUN_ONCE": "1",
+                "NEXUS_BASE_DIR": "${workspaceFolder}/../.."
+            },
+            "preLaunchTask": "sync dependencies",
+            "console": "integratedTerminal"
+        }
+    ]
+}

@@ -15,13 +15,13 @@ uv pip install -e .
 1. Launch a dry-run to validate configuration (no training will start):
 
 ```powershell
-.venv\Scripts\hero-train train --config configs/yolo11n.yaml --dry-run
+.venv\Scripts\hero-train --config configs/yolo11n.yaml --dry-run
 ```
 
 1. Start full training (example uses bundled config):
 
 ```powershell
-.venv\Scripts\hero-train train --config configs/yolo11n.yaml --device 0
+.venv\Scripts\hero-train --config configs/yolo11n.yaml --device 0
 ```
 
 ## Configuration
@@ -46,13 +46,7 @@ yolo detect train data=training/data-sets/yolov12/data.yaml model=yolo11n.pt epo
 For multi-GPU runs use `--device 0,1` (or `--device -1,-1` for the two most idle GPUs). Resume interrupted runs with either the CLI wrapper:
 
 ```powershell
-.venv\Scripts\hero-train train --resume --config configs/yolo11n.yaml
-```
-
-Or call Ultralytics directly:
-
-```powershell
-yolo train resume model=outputs/hero-yolo/weights/last.pt
+.venv\Scripts\hero-train --resume --config configs/yolo11n.yaml
 ```
 
 Reference tables for every argument are available in the Ultralytics [configuration docs](https://docs.ultralytics.com/usage/cfg/).

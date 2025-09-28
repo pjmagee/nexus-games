@@ -43,16 +43,32 @@ class ReplayHarvester {
     }
 }
 
+static class Env
+{
+    public static string Get(string key, string fallback)
+    {
+        var value = Environment.GetEnvironmentVariable(key);
+        return string.IsNullOrWhiteSpace(value) ? fallback : value;
+    }
+
+    public static int GetInt(string key, int fallback)
+    {
+        var value = Environment.GetEnvironmentVariable(key);
+        return int.TryParse(value, out var parsed) ? parsed : fallback;
+    }
+}
+
 class Program {
     static void Main() {
 
-        string source = Environment.GetEnvironmentVariable("HARVEST_SOURCE") ?? @"C:\\Users\\patri\\OneDrive\\Documents\\Heroes of the Storm\\Accounts";
-        string queueDir = "replays/queue";
+        string source = Env.Get("HARVEST_SOURCE", @"C:\\Users\\patri\\OneDrive\\Documents\\Heroes of the Storm\\Accounts");
+        string queueDir = Env.Get("HARVEST_QUEUE_DIR", "replays/queue");
         Directory.CreateDirectory(queueDir);
-        int cap = 10;
+        int cap = Env.GetInt("HARVEST_QUEUE_CAP", 10);
         var harvester = new ReplayHarvester(source, queueDir, cap);
-        var hbPath = "sessions/current/state/heartbeat_harvester.json";
-        Directory.CreateDirectory("sessions/current/state");
+        string stateRoot = Env.Get("HARVEST_STATE_ROOT", "sessions/current/state");
+        Directory.CreateDirectory(stateRoot);
+        var hbPath = Path.Combine(stateRoot, "heartbeat_harvester.json");
         var sw = Stopwatch.StartNew();
         int loops = 0;
 
