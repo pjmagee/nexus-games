@@ -36,3 +36,4 @@
 ## Win11 HyperV Host to Win11 Guest OS
 
 - <https://github.com/Barnacules/ShareGPUWithHyperVClient>
+- <https://github.com/jamesstringerparsec/Easy-GPU-PV>
